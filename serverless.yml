@@ -1,0 +1,119 @@
+service: data-api
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  region: eu-west-2
+  stage: production
+  timeout: 30
+  environment:
+    VALUES_TABLE: "${self:service}-${opt:stage, self:provider.stage}-values"
+    GROUPS_TABLE: "${self:service}-${opt:stage, self:provider.stage}-groups"
+    USERS_TABLE: "${self:service}-${opt:stage, self:provider.stage}-users"
+    KEYS_TABLE: "${self:service}-${opt:stage, self:provider.stage}-keys"
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+      Resource: "*"
+
+plugins:
+  - serverless-dynamodb-local
+  - serverless-offline
+
+custom:
+  dynamodb:
+    stages:
+      - production
+    start:
+      port: 8000
+      inMemory: true
+      migrate: true
+    # migration:
+
+functions:
+  apiHandler:
+    handler: index.handler
+    memorySize: 128
+    description: Main handler for data api
+    events:
+      - http: 'ANY {proxy+}'
+
+resources:
+  Resources:
+    ValuesDynamoDbTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          -
+            AttributeName: groupId
+            AttributeType: N
+          -
+            AttributeName: time
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: groupId
+            KeyType: HASH
+          - AttributeName: time
+            KeyType: RANGE
+        GlobalSecondaryIndexes:
+          -
+            IndexName: "time-index"
+            KeySchema:
+              - AttributeName: time
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+            ProvisionedThroughput:
+              ReadCapacityUnits: 1
+              WriteCapacityUnits: 1
+        BillingMode: PROVISIONED
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        StreamSpecification:
+          StreamViewType: "NEW_AND_OLD_IMAGES"
+        TableName: ${self:provider.environment.VALUES_TABLE}
+    GroupsDynamoDbTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          -
+            AttributeName: id
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: id
+            KeyType: HASH
+        BillingMode: PROVISIONED
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        StreamSpecification:
+          StreamViewType: "NEW_AND_OLD_IMAGES"
+        TableName: ${self:provider.environment.GROUPS_TABLE}
+    UsersDynamoDbTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          -
+            AttributeName: userId
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: userId
+            KeyType: HASH
+        BillingMode: PROVISIONED
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        StreamSpecification:
+          StreamViewType: "NEW_AND_OLD_IMAGES"
+        TableName: ${self:provider.environment.USERS_TABLE}
