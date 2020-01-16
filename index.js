@@ -42,17 +42,21 @@ app.post('/groups', async (req, res) => {
 app.get('/groups/:group_id', async (req, res) => {
   try {
     const group = await useCases.getGroup(req.params.group_id);
-    res.send(group);
+    if(group){
+      res.send(group);
+    }else{
+      res.sendStatus(404);
+    }
   } catch (err) {
     console.log(err);
     res.sendStatus(500);
   }
 });
 
-app.get('/groups/:group_id/metrics', async (req, res) => {
+app.put('/groups/:group_id', async (req, res) => {
   try {
-    const metrics = await useCases.getGroupMetrics(req.params.group_id);
-    res.send(metrics);
+    await useCases.updateGroup(req.params.group_id, req.body);
+    res.sendStatus(204);
   } catch (err) {
     console.log(err);
     res.sendStatus(500);
@@ -79,25 +83,4 @@ app.get('/groups/:group_id/metrics/:metric_id', async (req, res) => {
   }
 });
 
-//app.listen(3020, () => console.log(`App listening on port 3020!`));
-
 module.exports.handler = serverless(app);
-
-/*
-module.exports.server = async event => {
-  return {
-    statusCode: 200,
-    body: JSON.stringify(
-      {
-        message: 'Go Serverless v1.0! Your function executed successfully!',
-        input: event,
-      },
-      null,
-      2
-    ),
-  };
-
-  // Use this code if you don't use the http event with the LAMBDA-PROXY integration
-  // return { message: 'Go Serverless v1.0! Your function executed successfully!', event };
-};
-*/
