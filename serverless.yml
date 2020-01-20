@@ -11,6 +11,7 @@ provider:
     GROUPS_TABLE: "${self:service}-${opt:stage, self:provider.stage}-groups"
     USERS_TABLE: "${self:service}-${opt:stage, self:provider.stage}-users"
     KEYS_TABLE: "${self:service}-${opt:stage, self:provider.stage}-keys"
+    VALUES_BUCKET_SIZE: 3600
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -50,28 +51,17 @@ resources:
       Properties:
         AttributeDefinitions:
           -
-            AttributeName: groupId
-            AttributeType: N
+            AttributeName: groupAndTime
+            AttributeType: S
           -
-            AttributeName: time
+            AttributeName: timeStart
             AttributeType: S
         KeySchema:
           -
-            AttributeName: groupId
+            AttributeName: groupAndTime
             KeyType: HASH
-          - AttributeName: time
+          - AttributeName: timeStart
             KeyType: RANGE
-        GlobalSecondaryIndexes:
-          -
-            IndexName: "time-index"
-            KeySchema:
-              - AttributeName: time
-                KeyType: HASH
-            Projection:
-              ProjectionType: ALL
-            ProvisionedThroughput:
-              ReadCapacityUnits: 1
-              WriteCapacityUnits: 1
         BillingMode: PROVISIONED
         ProvisionedThroughput:
           ReadCapacityUnits: 1

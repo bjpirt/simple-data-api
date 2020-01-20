@@ -63,7 +63,7 @@ app.put('/groups/:group_id', async (req, res) => {
   }
 });
 
-app.post('/groups/:group_id/metrics', async (req, res) => {
+app.put('/groups/:group_id/metrics', async (req, res) => {
   try {
     await useCases.createBulkReadings(Number(req.params.group_id), req.body);
     res.sendStatus(204);
