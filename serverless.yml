@@ -11,7 +11,6 @@ provider:
     GROUPS_TABLE: "${self:service}-${opt:stage, self:provider.stage}-groups"
     USERS_TABLE: "${self:service}-${opt:stage, self:provider.stage}-users"
     KEYS_TABLE: "${self:service}-${opt:stage, self:provider.stage}-keys"
-    VALUES_BUCKET_SIZE: 3600
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -33,7 +32,6 @@ custom:
       port: 8000
       inMemory: true
       migrate: true
-    # migration:
 
 functions:
   apiHandler:
@@ -54,13 +52,13 @@ resources:
             AttributeName: groupAndTime
             AttributeType: S
           -
-            AttributeName: timeStart
+            AttributeName: metricTime
             AttributeType: S
         KeySchema:
           -
             AttributeName: groupAndTime
             KeyType: HASH
-          - AttributeName: timeStart
+          - AttributeName: metricTime
             KeyType: RANGE
         BillingMode: PROVISIONED
         ProvisionedThroughput:
