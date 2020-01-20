@@ -75,7 +75,7 @@ app.put('/groups/:group_id/metrics', async (req, res) => {
 
 app.get('/groups/:group_id/metrics/:metric_id', async (req, res) => {
   try {
-    const values = await useCases.getValues(Number(req.params.group_id), req.params.metric_id, req.query);
+    const values = await useCases.getValues(req.params.group_id, req.params.metric_id, req.query);
     res.send(values);
   } catch (err) {
     console.log(err);

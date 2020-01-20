@@ -49,14 +49,14 @@ resources:
       Properties:
         AttributeDefinitions:
           -
-            AttributeName: groupAndTime
+            AttributeName: groupId
             AttributeType: S
           -
             AttributeName: metricTime
             AttributeType: S
         KeySchema:
           -
-            AttributeName: groupAndTime
+            AttributeName: groupId
             KeyType: HASH
           - AttributeName: metricTime
             KeyType: RANGE
