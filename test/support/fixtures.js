@@ -105,5 +105,9 @@ module.exports = {
       "name": "Dummy",
     },
     "TableName": "GROUPS_TABLE"
-  }
+  },
+  mockHistory: [
+    {"time": "2020-01-16T08:21:57Z", "value": 83},
+    {"time": "2020-01-16T08:21:57Z", "value": 6.2}
+  ]
 }
