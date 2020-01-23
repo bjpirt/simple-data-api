@@ -14,6 +14,22 @@ module.exports = {
         }
     }
   },
+  mockGroup: {
+    "id": "FAKEID",
+    "name": "Dummy",
+    "metrics": {
+        "ac-power": {
+            "unit": "W",
+            "time": "2020-01-16T08:21:57Z",
+            "value": 83
+        },
+        "ac-current": {
+            "unit": "A",
+            "time": "2020-01-16T08:21:57Z",
+            "value": 6.2
+        }
+    }
+  },
   mockCreateRequestNoUnits: {
     "name": "Dummy",
     "metrics": {
@@ -49,8 +65,17 @@ module.exports = {
         }
     }
   },
+  mockGroupNoMetrics: {
+    "id": "FAKEID",
+    "name": "Dummy",
+    "metrics": {}
+  },
   mockCreateRequestOnlyName: {
     "name": "Dummy"
+  },
+  mockemptyGroup: {
+    id: "FAKEID",
+    metrics: {}
   },
   mockDynamoCreateRequest: {
     "Item": {
@@ -69,7 +94,7 @@ module.exports = {
           "value": 83,
         },
       },
-      "name": "Dummy",
+      "groupName": "Dummy",
     },
     "TableName": "GROUPS_TABLE"
   },
@@ -87,7 +112,7 @@ module.exports = {
           "value": 83,
         },
       },
-      "name": "Dummy",
+      "groupName": "Dummy",
     },
     "TableName": "GROUPS_TABLE"
   },
@@ -102,12 +127,60 @@ module.exports = {
         "ac-current": {},
         "ac-power": {},
       },
-      "name": "Dummy",
+      "groupName": "Dummy",
     },
     "TableName": "GROUPS_TABLE"
   },
   mockHistory: [
     {"time": "2020-01-16T08:21:57Z", "value": 83},
     {"time": "2020-01-16T08:21:57Z", "value": 6.2}
-  ]
+  ],
+  mockDynamoUnmatchedItem: {
+    "id": "FAKEID",
+    "metricUnits": {
+      "ac-current": "A",
+      "ac-power": "W",
+    },
+    "metricValues": {
+      "ac-current": {
+        "time": "2020-01-16T08:21:57Z",
+        "value": 6.2
+      },
+      "temperature": {
+        "time": "2020-01-16T08:21:57Z",
+        "value": 6.2
+      }
+    },
+    "groupName": "Dummy",
+  },
+  mockDynamoNoMetricsItem: {
+    "id": "FAKEID",
+    "metricUnits": {},
+    "metricValues": {},
+    "groupName": "Dummy",
+  },
+  mockDynamoEmptyItem: {
+    "id": "FAKEID",
+    "metricUnits": {},
+    "metricValues": {},
+    "groupName": undefined,
+  },
+  mockUnmatchedGroup: {
+    "id": "FAKEID",
+    "name": "Dummy",
+    "metrics": {
+        "ac-power": {
+            "unit": "W"
+        },
+        "ac-current": {
+            "unit": "A",
+            "time": "2020-01-16T08:21:57Z",
+            "value": 6.2
+        },
+        "temperature": {
+            "time": "2020-01-16T08:21:57Z",
+            "value": 6.2
+        }
+    }
+  },
 }
