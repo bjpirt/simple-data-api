@@ -43,6 +43,16 @@ describe('Dynamo Gateway', () => {
       expect(config.client.aupdate).toHaveBeenCalledWith(f.mockDynamoUpdateGroupOnlyUnits);
     });
 
+    it("doesn't set the name if it is not passed in", async () => {
+      await dynamo.updateGroup('FAKEID', f.mockGroupNoName);
+      expect(config.client.aupdate).toHaveBeenCalledWith(f.mockDynamoUpdateGroupNoName);
+    });
+
+    it("works if no metrics are passed in", async () => {
+      await dynamo.updateGroup('FAKEID', f.mockGroupNoMetrics);
+      expect(config.client.aupdate).toHaveBeenCalledWith(f.mockDynamoUpdateGroupNoMetrics);
+    });
+
     it("should raise an error if the group was not found", async () => {
       let exception = null;
       config.client.aupdate = jest.fn(() => {
@@ -55,6 +65,21 @@ describe('Dynamo Gateway', () => {
         exception = e;
       }
       expect(exception).toBe('NotFoundException')
+    });
+
+    it("should raise an error if it was unexpected", async () => {
+      let exception = null;
+      let dummyException = {code: 'Unknown'}
+      config.client.aupdate = jest.fn(() => {
+        throw(dummyException);
+      });
+      try{
+        await dynamo.updateGroup('FAKEID', f.mockCreateRequestOnlyUnits);
+        expect(true).toBe(false);
+      }catch(e){
+        exception = e;
+      }
+      expect(exception).toBe(dummyException)
     });
 
   });

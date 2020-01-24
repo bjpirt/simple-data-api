@@ -30,6 +30,14 @@ module.exports = {
         }
     }
   },
+  mockGroupNoName: {
+    "metrics": {
+        "ac-power": {
+            "time": "2020-01-16T08:21:57Z",
+            "value": 83
+        }
+    }
+  },
   mockCreateRequestNoUnits: {
     "name": "Dummy",
     "metrics": {
@@ -215,6 +223,22 @@ module.exports = {
     UpdateExpression: 'SET groupName = :name, metricUnits.#metricName0 = :unitValue0, metricUnits.#metricName1 = :unitValue1',
     ExpressionAttributeNames: { '#metricName0': 'ac-power', '#metricName1': 'ac-current' },
     ExpressionAttributeValues: { ':name': 'Dummy', ':unitValue0': 'W', ':unitValue1': 'A' },
+    ConditionExpression: "attribute_exists(metricValues)"
+  },
+  mockDynamoUpdateGroupNoName: {
+    TableName: 'GROUPS_TABLE',
+    Key: { id: 'FAKEID' },
+    UpdateExpression: 'SET metricValues.#metricName0 = :metricValue0',
+    ExpressionAttributeNames: { '#metricName0': 'ac-power' },
+    ExpressionAttributeValues: { ':metricValue0': { "time": "2020-01-16T08:21:57Z", "value": 83 }},
+    ConditionExpression: "attribute_exists(metricValues)"
+  },
+  mockDynamoUpdateGroupNoMetrics: {
+    TableName: 'GROUPS_TABLE',
+    Key: { id: 'FAKEID' },
+    UpdateExpression: 'SET groupName = :name',
+    ExpressionAttributeNames: { },
+    ExpressionAttributeValues: { ':name': 'Dummy' },
     ConditionExpression: "attribute_exists(metricValues)"
   },
   updateException: {
