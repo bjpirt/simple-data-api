@@ -62,6 +62,21 @@ module.exports = {
         }
     }
   },
+  mockGroupPlusTimes: (t) => {
+    return {
+      "name": "Dummy",
+      "metrics": {
+          "ac-power": {
+              "value": 83,
+              "time": t.toISOString()
+          },
+          "ac-current": {
+              "value": 6.2,
+              "time": t.toISOString()
+          }
+      }
+    }
+  },
   mockCreateRequestOnlyUnits: {
     "name": "Dummy",
     "metrics": {
@@ -77,6 +92,10 @@ module.exports = {
     "id": "FAKEID",
     "name": "Dummy",
     "metrics": {}
+  },
+  mockGroupMetricsMissing: {
+    "id": "FAKEID",
+    "name": "Dummy"
   },
   mockCreateRequestOnlyName: {
     "name": "Dummy"
