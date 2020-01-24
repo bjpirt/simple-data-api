@@ -58,8 +58,12 @@ app.put('/groups/:group_id', async (req, res) => {
     await useCases.updateGroup(req.params.group_id, req.body);
     res.sendStatus(204);
   } catch (err) {
-    console.log(err);
-    res.sendStatus(500);
+    if(err === 'NotFoundException'){
+      res.sendStatus(404);
+    }else{
+      console.log(err);
+      res.sendStatus(500);
+    }
   }
 });
 

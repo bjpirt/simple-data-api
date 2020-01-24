@@ -183,4 +183,47 @@ module.exports = {
         }
     }
   },
+  mockDynamoUpdateGroup: {
+    TableName: 'GROUPS_TABLE',
+    Key: { id: 'FAKEID' },
+    UpdateExpression: 'SET groupName = :name, metricValues.#metricName0 = :metricValue0, metricUnits.#metricName0 = :unitValue0, metricValues.#metricName1 = :metricValue1, metricUnits.#metricName1 = :unitValue1',
+    ExpressionAttributeNames: { '#metricName0': 'ac-power', '#metricName1': 'ac-current' },
+    ExpressionAttributeValues: {
+      ':name': 'Dummy',
+      ':metricValue0': { time: '2020-01-16T08:21:57Z', value: 83 },
+      ':unitValue0': 'W',
+      ':metricValue1': { time: '2020-01-16T08:21:57Z', value: 6.2 },
+      ':unitValue1': 'A'
+    },
+    ConditionExpression: "attribute_exists(metricValues)"
+  },
+  mockDynamoUpdateGroupNoUnits: {
+    TableName: 'GROUPS_TABLE',
+    Key: { id: 'FAKEID' },
+    UpdateExpression: 'SET groupName = :name, metricValues.#metricName0 = :metricValue0, metricValues.#metricName1 = :metricValue1',
+    ExpressionAttributeNames: { '#metricName0': 'ac-power', '#metricName1': 'ac-current' },
+    ExpressionAttributeValues: {
+      ':name': 'Dummy',
+      ':metricValue0': { time: '2020-01-16T08:21:57Z', value: 83 },
+      ':metricValue1': { time: '2020-01-16T08:21:57Z', value: 6.2 }
+    },
+    ConditionExpression: "attribute_exists(metricValues)"
+  },
+  mockDynamoUpdateGroupOnlyUnits: {
+    TableName: 'GROUPS_TABLE',
+    Key: { id: 'FAKEID' },
+    UpdateExpression: 'SET groupName = :name, metricUnits.#metricName0 = :unitValue0, metricUnits.#metricName1 = :unitValue1',
+    ExpressionAttributeNames: { '#metricName0': 'ac-power', '#metricName1': 'ac-current' },
+    ExpressionAttributeValues: { ':name': 'Dummy', ':unitValue0': 'W', ':unitValue1': 'A' },
+    ConditionExpression: "attribute_exists(metricValues)"
+  },
+  updateException: {
+    message: 'The conditional request failed',
+    code: 'ConditionalCheckFailedException',
+    time: new Date(),
+    requestId: '9913cf1f-2718-409d-94d1-019c54376c26',
+    statusCode: 400,
+    retryable: false,
+    retryDelay: 27.665121437563258
+  }
 }
