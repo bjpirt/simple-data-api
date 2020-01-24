@@ -260,6 +260,75 @@ module.exports = {
     ExpressionAttributeValues: { ':name': 'Dummy' },
     ConditionExpression: "attribute_exists(metricValues)"
   },
+  bulkMetrics: {
+    values: {
+      '2020-01-16T08:21:57Z': [1, 2],
+      '2020-01-16T09:21:57Z': [4, 5]
+    },
+    columns: ['ac-power', 'ac-current']
+  },
+  individualMetrics: [
+    {"metric": "ac-power", "time": "2020-01-16T08:21:57Z", "value": 1},
+    {"metric": "ac-current", "time": "2020-01-16T08:21:57Z", "value": 2},
+    {"metric": "ac-power", "time": "2020-01-16T09:21:57Z", "value": 4},
+    {"metric": "ac-current", "time": "2020-01-16T09:21:57Z", "value": 5}
+  ],
+  bulkGroupUpdate: {
+    metrics: {
+      "ac-power": {
+        time: "2020-01-16T09:21:57Z",
+        value: 4
+      },
+      "ac-current": {
+        time: "2020-01-16T09:21:57Z",
+        value: 5
+      }
+    }
+  },
+  bulkMetricsNewMetric: {
+    values: {
+      '2020-01-16T08:21:57Z': [1],
+      '2020-01-16T09:21:57Z': [4]
+    },
+    columns: ['temperature']
+  },
+  individualMetricsNewMetric: [
+    {"metric": "temperature", "time": "2020-01-16T08:21:57Z", "value": 1},
+    {"metric": "temperature", "time": "2020-01-16T09:21:57Z", "value": 4}
+  ],
+  bulkGroupUpdateNewMetric: {
+    metrics: {
+      "temperature": {
+        time: "2020-01-16T09:21:57Z",
+        value: 4
+      }
+    }
+  },
+  bulkMetricsOldTime: {
+    values: {
+      '2020-01-15T09:21:57Z': [4]
+    },
+    columns: ['ac-power']
+  },
+  individualMetricsOldTime: [
+    {"metric": "ac-power", "time": "2020-01-15T09:21:57Z", "value": 4}
+  ],
+  bulkMetricsPartialNew: {
+    values: {
+      '2020-01-15T08:21:57Z': [1],
+      '2020-01-16T10:22:57Z': [2],
+      '2020-01-16T10:21:57Z': [3]
+    },
+    columns: ['ac-power']
+  },
+  bulkGroupUpdatePartialNew: {
+    metrics: {
+      "ac-power": {
+        time: "2020-01-16T10:22:57Z",
+        value: 2
+      }
+    }
+  },
   updateException: {
     message: 'The conditional request failed',
     code: 'ConditionalCheckFailedException',
