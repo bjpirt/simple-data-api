@@ -444,6 +444,32 @@ module.exports = {
       }
     }
   },
+  dynamoValueList: {
+    Items: [
+      {
+        metricTime: "2020-01-16T09:21:00.000Z",
+        metricValues: {
+          "ac-power": 3
+        }
+      },
+      {
+        metricTime: "2020-01-16T10:21:00.000Z",
+        metricValues: {
+          "ac-power": 4
+        }
+      }
+    ]
+  },
+  valueList: [
+    {
+      time: "2020-01-16T09:21:00.000Z",
+      value: 3
+    },
+    {
+      time: "2020-01-16T10:21:00.000Z",
+      value: 4
+    }
+  ],
   updateException: {
     message: 'The conditional request failed',
     code: 'ConditionalCheckFailedException',
