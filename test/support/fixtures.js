@@ -329,6 +329,23 @@ module.exports = {
       }
     }
   },
+  mockValues: [
+    {"time": "2020-01-16T08:21:57Z", "value": 1},
+    {"time": "2020-01-16T09:22:07Z", "value": 2},
+    {"time": "2020-01-16T09:22:17Z", "value": 3},
+    {"time": "2020-01-16T09:22:27Z", "value": 4},
+    {"time": "2020-01-16T09:22:37Z", "value": 5},
+    {"time": "2020-01-16T09:22:47Z", "value": 6},
+    {"time": "2020-01-16T09:22:57Z", "value": 7},
+    {"time": "2020-01-16T09:23:07Z", "value": 8},
+    {"time": "2020-01-16T09:23:17Z", "value": 9},
+    {"time": "2020-01-16T09:23:27Z", "value": 10}
+  ],
+  mockGroupedValues: [
+    {"time": "2020-01-16T08:21:00.000Z", "value": 1},
+    {"time": "2020-01-16T09:22:00.000Z", "value": 4.5},
+    {"time": "2020-01-16T09:23:00.000Z", "value": 9},
+  ],
   updateException: {
     message: 'The conditional request failed',
     code: 'ConditionalCheckFailedException',
