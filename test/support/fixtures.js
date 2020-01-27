@@ -346,6 +346,104 @@ module.exports = {
     {"time": "2020-01-16T09:22:00.000Z", "value": 4.5},
     {"time": "2020-01-16T09:23:00.000Z", "value": 9},
   ],
+  groupList: [
+    {
+      id: "FAKE-ONE",
+      name: "one",
+      metrics: {
+        "ac-power": {
+          time: "2020-01-16T08:21:00.000Z",
+          value: 1,
+          unit: 'W'
+        },
+        "dc-power": {
+          time: "2020-01-16T08:21:00.000Z",
+          value: 2
+        }
+      }
+    },
+    {
+      id: "FAKE-TWO",
+      name: "two",
+      metrics: {
+        temperature: {
+          time: "2020-01-17T08:21:00.000Z",
+          value: 1
+        },
+        humidity: {
+          time: "2020-01-17T08:21:00.000Z",
+          value: 2,
+          unit: '%'
+        }
+      }
+    },
+  ],
+  groupSingle:{
+    id: "FAKE-ONE",
+    name: "one",
+    metrics: {
+      "ac-power": {
+        time: "2020-01-16T08:21:00.000Z",
+        value: 1,
+        unit: 'W'
+      },
+      "dc-power": {
+        time: "2020-01-16T08:21:00.000Z",
+        value: 2
+      }
+    }
+  },
+  groupDynamoList: {
+    Items: [
+      {
+        id: "FAKE-ONE",
+        groupName: 'one',
+        metricUnits: {"ac-power": 'W'},
+        metricValues: {
+          "ac-power": {
+            time: "2020-01-16T08:21:00.000Z",
+            value: 1
+          },
+          "dc-power": {
+            time: "2020-01-16T08:21:00.000Z",
+            value: 2
+          }
+        }
+      },
+      {
+        id: "FAKE-TWO",
+        groupName: 'two',
+        metricUnits: {humidity: '%'},
+        metricValues: {
+          temperature: {
+            time: "2020-01-17T08:21:00.000Z",
+            value: 1
+          },
+          humidity: {
+            time: "2020-01-17T08:21:00.000Z",
+            value: 2
+          }
+        }
+      }
+    ]
+  },
+  groupDynamoSingle: {
+    Item: {
+      id: "FAKE-ONE",
+      groupName: 'one',
+      metricUnits: {"ac-power": 'W'},
+      metricValues: {
+        "ac-power": {
+          time: "2020-01-16T08:21:00.000Z",
+          value: 1
+        },
+        "dc-power": {
+          time: "2020-01-16T08:21:00.000Z",
+          value: 2
+        }
+      }
+    }
+  },
   updateException: {
     message: 'The conditional request failed',
     code: 'ConditionalCheckFailedException',

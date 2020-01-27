@@ -2,6 +2,7 @@
 const config = require('../support/mockDynamoDbConnection')
 const dynamo = require('../../lib/gateways/Dynamo')(config);
 const f = require('../support/fixtures')
+const fakeId = 'FAKEID';
 
 describe('Dynamo Gateway', () => {
 
@@ -81,6 +82,38 @@ describe('Dynamo Gateway', () => {
       }
       expect(exception).toBe(dummyException)
     });
+  });
 
+  describe('listGroups', () => {
+    it("should return the formatted groups from Dynamo", async () => {
+      config.client.ascan.mockReturnValue(f.groupDynamoList)
+      const result = await dynamo.listGroups();
+      expect(config.client.ascan).toHaveBeenCalledWith({TableName: config.tables.groupsTable});
+      expect(result).toEqual(f.groupList);
+    });
+  });
+
+  describe('getGroup', () => {
+    it("should return the formatted group from Dynamo", async () => {
+      config.client.aget.mockReturnValue(f.groupDynamoSingle)
+      const result = await dynamo.getGroup(fakeId);
+      expect(config.client.aget).toHaveBeenCalledWith({TableName: config.tables.groupsTable, Key: {id: fakeId}});
+      expect(result).toEqual(f.groupSingle);
+    });
+
+    it("should return falsy if the group was not found", async () => {
+      config.client.aget.mockReturnValue({})
+      const result = await dynamo.getGroup(fakeId);
+      expect(result).toBeFalsy();
+    });
+  });
+
+  describe('updateValues', () => {
+  });
+
+  describe('createValues', () => {
+  });
+
+  describe('getValues', () => {
   });
 });
