@@ -470,6 +470,114 @@ module.exports = {
       value: 4
     }
   ],
+  createValuesSingleTime: [
+    {
+      metric: "ac-power",
+      time: "2020-01-16T09:21:00.000Z",
+      value: 3
+    },
+    {
+      metric: "dc-power",
+      time: "2020-01-16T09:21:00.000Z",
+      value: 4
+    }
+  ],
+  createValuesSingleTimeDynamoRequest: {
+    ConditionExpression: "attribute_not_exists(metricValues)",
+    Item: {
+      "groupId": "FAKEID",
+      "metricTime": "2020-01-16T09:21:00.000Z",
+      "metricValues": {
+        "ac-power": 3,
+        "dc-power": 4,
+      },
+    },
+    "Key": {
+      "groupId": "FAKEID",
+      "metricTime": "2020-01-16T09:21:00.000Z",
+    },
+    "TableName": "VALUES_TABLE"
+  },
+  createValuesMultipleTime: [
+    {
+      metric: "ac-power",
+      time: "2020-01-16T09:21:00.000Z",
+      value: 3
+    },
+    {
+      metric: "dc-power",
+      time: "2020-01-16T09:22:00.000Z",
+      value: 4
+    }
+  ],
+  createValuesMultiTimeDynamoRequest1: {
+    ConditionExpression: "attribute_not_exists(metricValues)",
+    Item: {
+      "groupId": "FAKEID",
+      "metricTime": "2020-01-16T09:21:00.000Z",
+      "metricValues": {
+        "ac-power": 3,
+      },
+    },
+    "Key": {
+      "groupId": "FAKEID",
+      "metricTime": "2020-01-16T09:21:00.000Z",
+    },
+    "TableName": "VALUES_TABLE"
+  },
+  createValuesMultiTimeDynamoRequest2: {
+    ConditionExpression: "attribute_not_exists(metricValues)",
+    Item: {
+      "groupId": "FAKEID",
+      "metricTime": "2020-01-16T09:22:00.000Z",
+      "metricValues": {
+        "dc-power": 4,
+      },
+    },
+    Key: {
+      groupId: "FAKEID",
+      metricTime: "2020-01-16T09:22:00.000Z",
+    },
+    TableName: "VALUES_TABLE"
+  },
+  createValuesSingleTimeItem: {
+    groupId: "FAKEID",
+    metricTime: "2020-01-16T09:21:00.000Z",
+    metricValues: {
+      "ac-power": 3,
+      "dc-power": 4
+    }
+  },
+  createValuesMultiTimeItem1: {
+    groupId: "FAKEID",
+    metricTime: "2020-01-16T09:21:00.000Z",
+    metricValues: {
+      "ac-power": 3
+    }
+  },
+  createValuesMultiTimeItem2: {
+    groupId: "FAKEID",
+    metricTime: "2020-01-16T09:22:00.000Z",
+    metricValues: {
+      "dc-power": 4
+    }
+  },
+  updateValuesDynamoRequest: {
+    ExpressionAttributeNames: {
+        "#metricName0": "ac-power",
+        "#metricName1": "dc-power",
+    },
+    ExpressionAttributeValues: {
+      ":metricValue0": 3,
+      ":metricValue1": 4
+    },
+    Key: {
+      "groupId": "FAKEID",
+      "metricTime": "2020-01-16T09:21:00.000Z",
+    },
+    UpdateExpression: "SET metricValues.#metricName0 = :metricValue0, metricValues.#metricName1 = :metricValue1",
+    TableName: "VALUES_TABLE"
+  },
   updateException: {
     message: 'The conditional request failed',
     code: 'ConditionalCheckFailedException',

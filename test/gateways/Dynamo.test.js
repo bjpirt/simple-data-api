@@ -67,6 +67,7 @@ describe('Dynamo Gateway', () => {
         exception = e;
       }
       expect(exception).toBe('NotFoundException')
+      config.client.aupdate = jest.fn();
     });
 
     it("should raise an error if it was unexpected", async () => {
@@ -82,6 +83,7 @@ describe('Dynamo Gateway', () => {
         exception = e;
       }
       expect(exception).toBe(dummyException)
+      config.client.aupdate = jest.fn();
     });
   });
 
@@ -110,9 +112,63 @@ describe('Dynamo Gateway', () => {
   });
 
   describe('updateValues', () => {
+    it("should update a record with the correct values", async () => {
+      await dynamo.updateValues(f.createValuesSingleTimeItem);
+      expect(config.client.aupdate).toBeCalledWith(f.updateValuesDynamoRequest);
+    });
   });
 
   describe('createValues', () => {
+    it("should insert a new record for the values with a single time", async () => {
+      await dynamo.createValues(fakeId, f.createValuesSingleTime);
+      expect(config.client.aput).toBeCalledWith(f.createValuesSingleTimeDynamoRequest);
+    });
+
+    it("should insert multiple new records for values with multiple times", async () => {
+      await dynamo.createValues(fakeId, f.createValuesMultipleTime);
+      expect(config.client.aput).toHaveReturnedTimes(2);
+      expect(config.client.aput).toBeCalledWith(f.createValuesMultiTimeDynamoRequest1);
+      expect(config.client.aput).toBeCalledWith(f.createValuesMultiTimeDynamoRequest2);
+    });
+
+    it("should update a record if it already exists", async () => {
+      config.client.aput = jest.fn(() => {
+        throw(f.updateException);
+      });
+      dynamo.updateValues = jest.fn();
+      await dynamo.createValues(fakeId, f.createValuesSingleTime);
+      expect(config.client.aput).toBeCalledWith(f.createValuesSingleTimeDynamoRequest);
+      expect(dynamo.updateValues).toBeCalledWith(f.createValuesSingleTimeItem);
+    });
+
+    it("should update multiple records if they already exist", async () => {
+      config.client.aput = jest.fn(() => {
+        throw(f.updateException);
+      });
+      dynamo.updateValues = jest.fn();
+      await dynamo.createValues(fakeId, f.createValuesMultipleTime);
+      expect(dynamo.updateValues).toHaveReturnedTimes(2);
+      expect(dynamo.updateValues).toBeCalledWith(f.createValuesMultiTimeItem1);
+      expect(dynamo.updateValues).toBeCalledWith(f.createValuesMultiTimeItem2);
+      config.client.aput = jest.fn();
+    });
+
+    it("should raise an error if it was unexpected", async () => {
+      let exception = null;
+      let dummyException = {code: 'Unknown'}
+      config.client.aput = jest.fn(() => {
+        throw(dummyException);
+      });
+      try{
+        await dynamo.createValues(fakeId, f.createValuesSingleTime);
+        expect(true).toBe(false);
+      }catch(e){
+        exception = e;
+      }
+      expect(exception).toBe(dummyException)
+      config.client.aput = jest.fn();
+    });
+
   });
 
   describe('getValues', () => {
