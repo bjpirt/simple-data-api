@@ -77,7 +77,6 @@ module.exports.createMetrics = async (event) => {
 
 module.exports.getMetric = async (event) => {
   try {
-    console.log(event)
     const values = await useCases.getValues(event.pathParameters.groupId, event.pathParameters.metricId, event.queryStringParameters);
     return send(values);
   } catch (err) {
