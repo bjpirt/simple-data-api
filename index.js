@@ -1,90 +1,87 @@
 'use strict';
 
-const serverless = require('serverless-http');
-const express = require('express');
-const bodyParser = require('body-parser');
 const dbConn = require('./lib/DynamoDbConnection');
 const dbGateway = require('./lib/gateways/Dynamo')(dbConn);
 const useCases = require('./lib/use-cases')({ dbGateway });
 
-const app = express();
+const send = (data) => {
+  return {
+    statusCode: 200,
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data)
+  };
+}
 
-app.use(function(req, res, next) {
-  // had to fix api gateway not removing content-encoding header after transforming content
-  if(req.headers['content-encoding'] === 'gzip' && req.body.toString('utf8', 0, 1) === '{'){
-    req.headers['content-encoding'] = 'identity';
-  }
-  next();
-});
-app.use(bodyParser.json());
-
-app.get('/groups', async (req, res) => {
+module.exports.listGroups = async () => {
   try {
     const groups = await useCases.listGroups();
-    res.send(groups);
+    return send(groups);
   } catch (err) {
     console.log(err);
-    res.sendStatus(500);
+    return { statusCode: 500 }
   }
-});
+}
 
-app.post('/groups', async (req, res) => {
+module.exports.createGroup = async (event) => {
   try {
-    console.log(req.json);
-    const group = await useCases.createGroup(req.body);
-    res.redirect(`/groups/${group.id}`);
+    const group = await useCases.createGroup(JSON.parse(event.body));
+    return {
+      statusCode: 302,
+      headers: { Location: `/groups/${group.id}` }
+    };
   } catch (err) {
     console.log(err);
-    res.sendStatus(500);
+    return { statusCode: 500 }
   }
-});
+}
 
-app.get('/groups/:group_id', async (req, res) => {
+module.exports.getGroup = async (event) => {
   try {
-    const group = await useCases.getGroup(req.params.group_id);
+    const group = await useCases.getGroup(event.pathParameters.groupId);
     if(group){
-      res.send(group);
+      return send(group);
     }else{
-      res.sendStatus(404);
+      return { statusCode: 404 };
     }
   } catch (err) {
     console.log(err);
-    res.sendStatus(500);
+    return { statusCode: 500 }
   }
-});
+}
 
-app.put('/groups/:group_id', async (req, res) => {
+module.exports.updateGroup = async (event) => {
   try {
-    await useCases.updateGroup(req.params.group_id, req.body);
-    res.sendStatus(204);
+    await useCases.updateGroup(event.pathParameters.groupId, JSON.parse(event.body));
+    return { statusCode: 204 };
   } catch (err) {
     if(err === 'NotFoundException'){
-      res.sendStatus(404);
+      return { statusCode: 404 };
     }else{
       console.log(err);
-      res.sendStatus(500);
+      return { statusCode: 500 }
     }
   }
-});
+}
 
-app.post('/groups/:group_id/metrics', async (req, res) => {
+module.exports.createMetrics = async (event) => {
   try {
-    await useCases.createBulkReadings(req.params.group_id, req.body);
-    res.sendStatus(204);
+    await useCases.createBulkReadings(event.pathParameters.groupId, JSON.parse(event.body));
+    return { statusCode: 204 };
   } catch (err) {
     console.log(err);
-    res.sendStatus(500);
+    return { statusCode: 500 }
   }
-});
+}
 
-app.get('/groups/:group_id/metrics/:metric_id', async (req, res) => {
+module.exports.getMetric = async (event) => {
   try {
-    const values = await useCases.getValues(req.params.group_id, req.params.metric_id, req.query);
-    res.send(values);
+    console.log(event)
+    const values = await useCases.getValues(event.pathParameters.groupId, event.pathParameters.metricId, event.queryStringParameters);
+    return send(values);
   } catch (err) {
     console.log(err);
-    res.sendStatus(500);
+    return { statusCode: 500 }
   }
-});
-
-module.exports.handler = serverless(app);
+}

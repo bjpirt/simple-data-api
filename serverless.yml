@@ -34,12 +34,50 @@ custom:
       migrate: true
 
 functions:
-  apiHandler:
-    handler: index.handler
+  listGroups:
+    handler: index.listGroups
+    events:
+      - http:
+          path: groups
+          method: get
+          cors: true
+  createGroup:
+    handler: index.createGroup
+    events:
+      - http:
+          path: groups
+          method: post
+          cors: true
+  getGroup:
+    handler: index.getGroup
+    events:
+      - http:
+          path: groups/{groupId}
+          method: get
+          cors: true
+  updateGroup:
+    handler: index.updateGroup
+    events:
+      - http:
+          path: groups/{groupId}
+          method: put
+          cors: true
+  createMetrics:
+    handler: index.createMetrics
+    events:
+      - http:
+          path: groups/{groupId}/metrics
+          method: post
+          cors: true
+  getMetric:
+    handler: index.getMetric
     memorySize: 128
     description: Main handler for data api
     events:
-      - http: 'ANY {proxy+}'
+      - http:
+          path: groups/{groupId}/metrics/{metricId}
+          method: get
+          cors: true
 
 resources:
   Resources:
