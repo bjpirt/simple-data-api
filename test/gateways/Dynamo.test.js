@@ -119,6 +119,13 @@ describe('Dynamo Gateway', () => {
     });
   });
 
+  describe('generateGroupId', () => {
+    it("should return a random string", async () => {
+      let groupId = dynamo.generateGroupId();
+      expect(groupId).toMatch(/^[a-z0-9]{8}$/);
+    });
+  });
+
   describe('listGroups', () => {
     it("should return the formatted groups from Dynamo", async () => {
       config.client.ascan.mockReturnValue(f.groupDynamoList)
