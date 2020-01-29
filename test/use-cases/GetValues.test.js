@@ -54,4 +54,10 @@ describe('GetValues', () => {
     const result = await getValues(fakeId, fakeMetric, {interval: 60});
     expect(result).toEqual(f.mockGroupedValues);
   });
+
+  it("should accept null for options", async () => {
+    dbGateway.getValues.mockReturnValue(f.mockValues);
+    const result = await getValues(fakeId, fakeMetric, null);
+    expect(result).toEqual(f.mockValues);
+  });
 });

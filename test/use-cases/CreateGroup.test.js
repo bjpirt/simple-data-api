@@ -8,20 +8,23 @@ const {
   mockCreateRequestOnlyName,
   mockHistory
 } = require('../support/fixtures')
+const fakeId = 'FAKEID';
 
 describe('CreateGroup', () => {
   it("should pass through the data to the gateway", async () => {
+    dbGateway.createGroup.mockReturnValueOnce({id: fakeId})
     await createGroup(mockCreateRequest);
     expect(dbGateway.createGroup).toHaveBeenCalledWith(mockCreateRequest);
   });
 
   it("should return the created group", async () => {
-    dbGateway.createGroup.mockReturnValue({id: "FAKEID"});
+    dbGateway.createGroup.mockReturnValueOnce({id: fakeId});
     const group = await createGroup(mockCreateRequest);
-    expect(group.id).toEqual('FAKEID');
+    expect(group.id).toEqual(fakeId);
   });
 
   it("should add timestamps if none are present", async () => {
+    dbGateway.createGroup.mockReturnValueOnce({id: fakeId});
     const mockDate = new Date();
     jest.spyOn(global, 'Date').mockImplementation(() => mockDate);
 
@@ -36,11 +39,13 @@ describe('CreateGroup', () => {
   });
 
   it("should not add timestamps if value is not present", async () => {
+    dbGateway.createGroup.mockReturnValueOnce({id: fakeId});
     await createGroup(mockCreateRequestOnlyUnits);
     expect(dbGateway.createGroup).toHaveBeenCalledWith(mockCreateRequestOnlyUnits);
   });
 
   it("should still work with no metrics", async () => {
+    dbGateway.createGroup.mockReturnValueOnce({id: fakeId});
     await createGroup(mockCreateRequestOnlyName);
     expect(dbGateway.createGroup).toHaveBeenCalledWith({
       name: mockCreateRequestOnlyName.name,
@@ -49,16 +54,18 @@ describe('CreateGroup', () => {
   });
 
   it("should also store the metric values in the history", async () => {
+    dbGateway.createGroup.mockReturnValueOnce({id: fakeId});
     await createGroup(mockCreateRequest);
-    expect(dbGateway.createValues).toHaveBeenCalledWith(mockHistory);
+    expect(dbGateway.createValues).toHaveBeenCalledWith(fakeId, mockHistory);
   })
 
   it("should also store the metric values without timestamp in the history", async () => {
+    dbGateway.createGroup.mockReturnValueOnce({id: fakeId});
     const mockDate = new Date();
     jest.spyOn(global, 'Date').mockImplementation(() => mockDate);
 
     await createGroup(mockCreateRequestNoTime)
-    expect(dbGateway.createValues).toHaveBeenCalledWith([
+    expect(dbGateway.createValues).toHaveBeenCalledWith(fakeId, [
       {"time": mockDate.toISOString(), "value": 83},
       {"time": mockDate.toISOString(), "value": 6.2}
     ])
