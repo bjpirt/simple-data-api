@@ -14,15 +14,21 @@ const send = (data) => {
   };
 }
 
-module.exports.listGroups = async () => {
-  try {
-    const groups = await useCases.listGroups();
-    return send(groups);
-  } catch (err) {
-    console.log(err);
-    return { statusCode: 500 }
-  }
+const catchError = (fn) => {
+  return (async (event) => {
+    try {
+      return await fn(event)
+    } catch (err) {
+      console.log(err);
+      return { statusCode: 500 }
+    }
+  })
 }
+
+module.exports.listGroups = catchError(async (event) => {
+  const groups = await useCases.listGroups();
+  return send(groups);
+})
 
 module.exports.createGroup = async (event) => {
   try {
