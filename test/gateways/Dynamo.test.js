@@ -1,11 +1,15 @@
 
-const config = require('../support/mockDynamoDbConnection')
-const dynamo = require('../../lib/gateways/Dynamo')(config);
+let config, dynamo;
 const f = require('../support/fixtures')
 const fakeId = 'FAKEID';
 const fakeMetric = 'ac-power';
 
 describe('Dynamo Gateway', () => {
+
+  beforeEach(() => {
+    config = require('../support/mockDynamoDbConnection')
+    dynamo = require('../../lib/gateways/Dynamo')(config);
+  });
 
   describe('createGroup', () => {
     beforeEach(() => {
@@ -26,6 +30,34 @@ describe('Dynamo Gateway', () => {
     it("should still add units if no time and value are present", async () => {
       await dynamo.createGroup(f.mockCreateRequestOnlyUnits);
       expect(config.client.aput).toHaveBeenCalledWith(f.mockDynamoCreateRequestOnlyUnits);
+    });
+
+    it("retry if the group id already exists", async () => {
+      dynamo.generateGroupId = jest.fn();
+      dynamo.generateGroupId
+        .mockReturnValueOnce("FAKEID")
+        .mockReturnValueOnce("FAKEIDNEW");
+      config.client.aput
+        .mockImplementationOnce(() => { throw(f.updateException) } )
+      await dynamo.createGroup(f.mockCreateRequest);
+      expect(config.client.aput).toHaveBeenCalledTimes(2);
+      expect(config.client.aput).toHaveBeenCalledWith(f.mockDynamoCreateRequest);
+      expect(config.client.aput).toHaveBeenCalledWith(f.mockDynamoCreateRequest2);
+    });
+
+    it("should throw an error if dynamo raises an unknown error", async () => {
+      let exception = null;
+      let dummyException = {code: 'Unknown'}
+      config.client.aput = jest.fn(() => { throw(dummyException) });
+
+      try{
+        await dynamo.createGroup(f.mockCreateRequest);
+        expect(true).toBe(false);
+      }catch(e){
+        exception = e;
+      }
+      expect(exception).toBe(dummyException)
+      config.client.aput = jest.fn();
     });
   });
 

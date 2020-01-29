@@ -105,80 +105,105 @@ module.exports = {
     metrics: {}
   },
   mockDynamoCreateRequest: {
-    "Item": {
-      "id": "FAKEID",
-      "metricUnits": {
+    Item: {
+      id: "FAKEID",
+      metricUnits: {
         "ac-current": "A",
         "ac-power": "W",
       },
-      "metricValues": {
+      metricValues: {
         "ac-current": {
-          "time": "2020-01-16T08:21:57Z",
-          "value": 6.2,
+          time: "2020-01-16T08:21:57Z",
+          value: 6.2,
         },
         "ac-power": {
-          "time": "2020-01-16T08:21:57Z",
-          "value": 83,
+          time: "2020-01-16T08:21:57Z",
+          value: 83,
         },
       },
-      "groupName": "Dummy",
+      groupName: "Dummy",
     },
-    "TableName": "GROUPS_TABLE"
+    TableName: "GROUPS_TABLE",
+    ConditionExpression: 'attribute_not_exists(metricValues)'
+  },
+  mockDynamoCreateRequest2: {
+    Item: {
+      id: "FAKEIDNEW",
+      metricUnits: {
+        "ac-current": "A",
+        "ac-power": "W",
+      },
+      metricValues: {
+        "ac-current": {
+          time: "2020-01-16T08:21:57Z",
+          value: 6.2,
+        },
+        "ac-power": {
+          time: "2020-01-16T08:21:57Z",
+          value: 83,
+        },
+      },
+      groupName: "Dummy",
+    },
+    TableName: "GROUPS_TABLE",
+    ConditionExpression: 'attribute_not_exists(metricValues)'
   },
   mockDynamoCreateRequestNoUnits: {
-    "Item": {
-      "id": "FAKEID",
-      "metricUnits": {},
-      "metricValues": {
+    Item: {
+      id: "FAKEID",
+      metricUnits: {},
+      metricValues: {
         "ac-current": {
-          "time": "2020-01-16T08:21:57Z",
-          "value": 6.2,
+          time: "2020-01-16T08:21:57Z",
+          value: 6.2,
         },
         "ac-power": {
-          "time": "2020-01-16T08:21:57Z",
-          "value": 83,
+          time: "2020-01-16T08:21:57Z",
+          value: 83,
         },
       },
-      "groupName": "Dummy",
+      groupName: "Dummy",
     },
-    "TableName": "GROUPS_TABLE"
+    TableName: "GROUPS_TABLE",
+    ConditionExpression: 'attribute_not_exists(metricValues)'
   },
   mockDynamoCreateRequestOnlyUnits: {
-    "Item": {
-      "id": "FAKEID",
-      "metricUnits": {
+    Item: {
+      id: "FAKEID",
+      metricUnits: {
         "ac-current": "A",
         "ac-power": "W",
       },
-      "metricValues": {
+      metricValues: {
         "ac-current": {},
         "ac-power": {},
       },
-      "groupName": "Dummy",
+      groupName: "Dummy",
     },
-    "TableName": "GROUPS_TABLE"
+    TableName: "GROUPS_TABLE",
+    ConditionExpression: 'attribute_not_exists(metricValues)'
   },
   mockHistory: [
     {"time": "2020-01-16T08:21:57Z", "value": 83},
     {"time": "2020-01-16T08:21:57Z", "value": 6.2}
   ],
   mockDynamoUnmatchedItem: {
-    "id": "FAKEID",
-    "metricUnits": {
+    id: "FAKEID",
+    metricUnits: {
       "ac-current": "A",
       "ac-power": "W",
     },
-    "metricValues": {
+    metricValues: {
       "ac-current": {
-        "time": "2020-01-16T08:21:57Z",
-        "value": 6.2
+        time: "2020-01-16T08:21:57Z",
+        value: 6.2
       },
       "temperature": {
-        "time": "2020-01-16T08:21:57Z",
-        "value": 6.2
+        time: "2020-01-16T08:21:57Z",
+        value: 6.2
       }
     },
-    "groupName": "Dummy",
+    groupName: "Dummy",
   },
   mockDynamoNoMetricsItem: {
     "id": "FAKEID",
