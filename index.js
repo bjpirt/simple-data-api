@@ -70,17 +70,25 @@ module.exports.createMetrics = async (event) => {
     await useCases.createBulkReadings(event.pathParameters.groupId, JSON.parse(event.body));
     return { statusCode: 204 };
   } catch (err) {
-    console.log(err);
-    return { statusCode: 500 }
+    if(err === 'NotFoundException'){
+      return { statusCode: 404 };
+    }else{
+      console.log(err);
+      return { statusCode: 500 }
+    }
   }
 }
 
 module.exports.getMetric = async (event) => {
   try {
-    const values = await useCases.getValues(event.pathParameters.groupId, event.pathParameters.metricId, event.queryStringParameters);
+    const values = await useCases.getMetric(event.pathParameters.groupId, event.pathParameters.metricId, event.queryStringParameters);
     return send(values);
   } catch (err) {
-    console.log(err);
-    return { statusCode: 500 }
+    if(err === 'NotFoundException'){
+      return { statusCode: 404 };
+    }else{
+      console.log(err);
+      return { statusCode: 500 }
+    }
   }
 }

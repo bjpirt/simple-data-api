@@ -30,6 +30,22 @@ module.exports = {
         }
     }
   },
+  mockGroup2: {
+    "id": "FAKEID",
+    "name": "NewName",
+    "metrics": {
+        "ac-power": {
+            "unit": "kW",
+            "time": "2020-01-17T08:21:57Z",
+            "value": 90
+        },
+        "ac-current": {
+            "unit": "mA",
+            "time": "2020-01-17T08:21:57Z",
+            "value": 7.2
+        }
+    }
+  },
   mockGroupNoName: {
     "metrics": {
         "ac-power": {
@@ -125,6 +141,24 @@ module.exports = {
     },
     TableName: "GROUPS_TABLE",
     ConditionExpression: 'attribute_not_exists(metricValues)'
+  },
+  updatedDynamoItem: {
+    id: "FAKEID",
+    metricUnits: {
+      "ac-current": "A",
+      "ac-power": "W",
+    },
+    metricValues: {
+      "ac-current": {
+        time: "2020-01-16T09:21:57Z",
+        value: 5,
+      },
+      "ac-power": {
+        time: "2020-01-16T09:21:57Z",
+        value: 4,
+      },
+    },
+    groupName: "Dummy",
   },
   mockDynamoCreateRequest2: {
     Item: {
@@ -284,6 +318,24 @@ module.exports = {
     ExpressionAttributeNames: { },
     ExpressionAttributeValues: { ':name': 'Dummy' },
     ConditionExpression: "attribute_exists(metricValues)"
+  },
+  updatedDynamoGroup: {
+    "groupName": "NewName",
+    "id": "FAKEID",
+    "metricUnits": {
+      "ac-current": "mA",
+      "ac-power": "kW",
+    },
+    "metricValues": {
+      "ac-current": {
+        "time": "2020-01-17T08:21:57Z",
+        "value": 7.2,
+      },
+      "ac-power": {
+        "time": "2020-01-17T08:21:57Z",
+        "value": 90,
+      }
+    }
   },
   bulkMetrics: {
     values: {
@@ -602,6 +654,39 @@ module.exports = {
     },
     UpdateExpression: "SET metricValues.#metricName0 = :metricValue0, metricValues.#metricName1 = :metricValue1",
     TableName: "VALUES_TABLE"
+  },
+  dynamoValuesList: [
+    {
+      "groupId": "FAKEID",
+      "metricTime": "2020-01-16T08:21:57Z",
+      "metricValues": {
+        "ac-current": 2,
+        "ac-power": 1,
+      },
+    },
+    {
+      "groupId": "FAKEID",
+      "metricTime": "2020-01-16T09:21:57Z",
+      "metricValues": {
+        "ac-current": 5,
+        "ac-power": 4,
+      },
+    }
+  ],
+  generateDynamoValuesList: (count) => {
+    count = count || 10;
+    const output = [];
+    const now = new Date();
+    for(let i = 0; i< count; i++){
+      output.push({
+        "groupId": "FAKEID",
+        "metricTime": (new Date(now - i * 60000)).toISOString(),
+        "metricValues": {
+          "ac-current": i
+        },
+      })
+    }
+    return output;
   },
   updateException: {
     message: 'The conditional request failed',

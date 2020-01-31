@@ -210,10 +210,10 @@ describe('Dynamo Gateway', () => {
 
   });
 
-  describe('getValues', () => {
+  describe('getMetric', () => {
     it("should return the formatted values from Dynamo and pass through the correct query", async () => {
       config.client.aquery.mockReturnValue(f.dynamoValueList)
-      const result = await dynamo.getValues(fakeId, fakeMetric, {start: new Date(Date.parse('2020-01-16T08:21:00.000Z')), end: new Date(Date.parse('2020-01-17T08:21:00.000Z'))});
+      const result = await dynamo.getMetric(fakeId, fakeMetric, {start: new Date(Date.parse('2020-01-16T08:21:00.000Z')), end: new Date(Date.parse('2020-01-17T08:21:00.000Z'))});
       expect(config.client.aquery).toHaveBeenCalledWith({
         TableName: config.tables.valuesTable,
         KeyConditionExpression: 'groupId = :groupId and metricTime BETWEEN :start AND :end',

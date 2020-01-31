@@ -103,7 +103,7 @@ resources:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
         StreamSpecification:
-          StreamViewType: "NEW_AND_OLD_IMAGES"
+          StreamEnabled: false
         TableName: ${self:provider.environment.VALUES_TABLE}
     GroupsDynamoDbTable:
       Type: 'AWS::DynamoDB::Table'
@@ -122,7 +122,7 @@ resources:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
         StreamSpecification:
-          StreamViewType: "NEW_AND_OLD_IMAGES"
+          StreamEnabled: false
         TableName: ${self:provider.environment.GROUPS_TABLE}
     UsersDynamoDbTable:
       Type: 'AWS::DynamoDB::Table'
@@ -141,5 +141,5 @@ resources:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
         StreamSpecification:
-          StreamViewType: "NEW_AND_OLD_IMAGES"
+          StreamEnabled: false
         TableName: ${self:provider.environment.USERS_TABLE}

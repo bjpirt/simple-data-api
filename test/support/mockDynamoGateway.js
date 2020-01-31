@@ -6,5 +6,5 @@ module.exports =  {
   getGroup: jest.fn(),
   updateValues: jest.fn(),
   createValues: jest.fn(),
-  getValues: jest.fn()
+  getMetric: jest.fn()
 }
