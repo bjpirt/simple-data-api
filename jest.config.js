@@ -34,7 +34,8 @@ module.exports = {
     "/vendor/",
     "/test/",
     "/coverage/",
-    "jest.config.js"
+    "jest.config.js",
+    "/lib/DynamoDbOptions.js"
   ],
 
   // A list of reporter names that Jest uses when writing coverage reports
