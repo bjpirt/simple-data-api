@@ -9,8 +9,6 @@ provider:
   environment:
     VALUES_TABLE: "${self:service}-${opt:stage, self:provider.stage}-values"
     GROUPS_TABLE: "${self:service}-${opt:stage, self:provider.stage}-groups"
-    USERS_TABLE: "${self:service}-${opt:stage, self:provider.stage}-users"
-    KEYS_TABLE: "${self:service}-${opt:stage, self:provider.stage}-keys"
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -124,22 +122,3 @@ resources:
         StreamSpecification:
           StreamEnabled: false
         TableName: ${self:provider.environment.GROUPS_TABLE}
-    UsersDynamoDbTable:
-      Type: 'AWS::DynamoDB::Table'
-      DeletionPolicy: Retain
-      Properties:
-        AttributeDefinitions:
-          -
-            AttributeName: userId
-            AttributeType: S
-        KeySchema:
-          -
-            AttributeName: userId
-            KeyType: HASH
-        BillingMode: PROVISIONED
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
-        StreamSpecification:
-          StreamEnabled: false
-        TableName: ${self:provider.environment.USERS_TABLE}

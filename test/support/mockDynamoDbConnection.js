@@ -8,9 +8,7 @@ const client = {
 
 const tables = {
   valuesTable: 'VALUES_TABLE',
-  groupsTable: 'GROUPS_TABLE',
-  usersTable: 'USERS_TABLE',
-  keysTable: 'KEYS_TABLE'
+  groupsTable: 'GROUPS_TABLE'
 }
 
 module.exports = { client, tables };
