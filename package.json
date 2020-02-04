@@ -9,11 +9,16 @@
   "author": "Ben Pirt",
   "devDependencies": {
     "aws-sdk": "^2.596.0",
+    "dotenv": "^8.2.0",
     "dynalite": "^3.1.5",
     "jest": "^24.9.0",
     "serverless": "^1.62.0",
     "serverless-dynamodb-local": "^0.2.38",
-    "serverless-offline": "^5.12.1"
+    "serverless-offline": "^5.12.1",
+    "serverless-offline-ssm": "^4.1.2"
   },
-  "dependencies": {}
+  "dependencies": {
+    "bcrypt": "^3.0.7",
+    "jsonwebtoken": "^8.5.1"
+  }
 }

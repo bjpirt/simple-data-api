@@ -9,6 +9,9 @@ provider:
   environment:
     VALUES_TABLE: "${self:service}-${opt:stage, self:provider.stage}-values"
     GROUPS_TABLE: "${self:service}-${opt:stage, self:provider.stage}-groups"
+    MAIN_USER: ${ssm:/data-api/production/MAIN_USER}
+    PASS_HASH: ${ssm:/data-api/production/PASS_HASH}
+    JWT_SECRET: ${ssm:/data-api/production/JWT_SECRET}
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -21,6 +24,7 @@ provider:
 plugins:
   - serverless-dynamodb-local
   - serverless-offline
+  - serverless-offline-ssm
 
 custom:
   dynamodb:
@@ -33,48 +37,55 @@ custom:
 
 functions:
   listGroups:
-    handler: index.listGroups
+    handler: lambda.listGroups
     events:
       - http:
           path: groups
           method: get
           cors: true
   createGroup:
-    handler: index.createGroup
+    handler: lambda.createGroup
     events:
       - http:
           path: groups
           method: post
           cors: true
   getGroup:
-    handler: index.getGroup
+    handler: lambda.getGroup
     events:
       - http:
           path: groups/{groupId}
           method: get
           cors: true
   updateGroup:
-    handler: index.updateGroup
+    handler: lambda.updateGroup
     events:
       - http:
           path: groups/{groupId}
           method: put
           cors: true
   createMetrics:
-    handler: index.createMetrics
+    handler: lambda.createMetrics
     events:
       - http:
           path: groups/{groupId}/metrics
           method: post
           cors: true
   getMetric:
-    handler: index.getMetric
-    memorySize: 128
+    handler: lambda.getMetric
     description: Main handler for data api
     events:
       - http:
           path: groups/{groupId}/metrics/{metricId}
           method: get
+          cors: true
+  login:
+    handler: lambda.login
+    description: Main handler for data api
+    events:
+      - http:
+          path: login
+          method: post
           cors: true
 
 resources:
