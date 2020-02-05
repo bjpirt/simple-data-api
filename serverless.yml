@@ -64,6 +64,13 @@ functions:
           path: groups/{groupId}/keys
           method: get
           cors: true
+  deleteGroupKey:
+    handler: lambda.deleteGroupKey
+    events:
+      - http:
+          path: groups/{groupId}/keys/{keyId}
+          method: delete
+          cors: true
   updateGroup:
     handler: lambda.updateGroup
     events:
