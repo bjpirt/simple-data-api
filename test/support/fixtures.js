@@ -138,10 +138,57 @@ module.exports = {
         },
       },
       groupName: "Dummy",
+      groupKeys: {}
     },
     TableName: "GROUPS_TABLE",
     ConditionExpression: 'attribute_not_exists(metricValues)'
   },
+  mockDynamoCreateRequestWithKeys: {
+    Item: {
+      id: "FAKEID",
+      metricUnits: {
+        "ac-current": "A",
+        "ac-power": "W",
+      },
+      metricValues: {
+        "ac-current": {
+          time: "2020-01-16T08:21:57Z",
+          value: 6.2,
+        },
+        "ac-power": {
+          time: "2020-01-16T08:21:57Z",
+          value: 83,
+        },
+      },
+      groupName: "Dummy",
+      groupKeys: {
+        abc: {
+          name: "Key One",
+          methods: ['*'],
+          token: "abc123"
+        },
+        def: {
+          name: "Key Two",
+          methods: ['*'],
+          token: "def123"
+        }
+      }
+    },
+    TableName: "GROUPS_TABLE",
+    ConditionExpression: 'attribute_not_exists(metricValues)'
+  },
+  keysResult: [
+    {
+      name: "Key One",
+      methods: ['*'],
+      token: "abc123"
+    },
+    {
+      name: "Key Two",
+      methods: ['*'],
+      token: "def123"
+    }
+  ],
   updatedDynamoItem: {
     id: "FAKEID",
     metricUnits: {
@@ -159,6 +206,7 @@ module.exports = {
       },
     },
     groupName: "Dummy",
+    groupKeys: {}
   },
   mockDynamoCreateRequest2: {
     Item: {
@@ -178,6 +226,7 @@ module.exports = {
         },
       },
       groupName: "Dummy",
+      groupKeys: {}
     },
     TableName: "GROUPS_TABLE",
     ConditionExpression: 'attribute_not_exists(metricValues)'
@@ -197,6 +246,7 @@ module.exports = {
         },
       },
       groupName: "Dummy",
+      groupKeys: {}
     },
     TableName: "GROUPS_TABLE",
     ConditionExpression: 'attribute_not_exists(metricValues)'
@@ -213,6 +263,7 @@ module.exports = {
         "ac-power": {},
       },
       groupName: "Dummy",
+      groupKeys: {}
     },
     TableName: "GROUPS_TABLE",
     ConditionExpression: 'attribute_not_exists(metricValues)'
@@ -237,24 +288,27 @@ module.exports = {
         value: 6.2
       }
     },
+    groupKeys: {},
     groupName: "Dummy",
   },
   mockDynamoNoMetricsItem: {
-    "id": "FAKEID",
-    "metricUnits": {},
-    "metricValues": {},
-    "groupName": "Dummy",
+    id: "FAKEID",
+    metricUnits: {},
+    metricValues: {},
+    groupKeys: {},
+    groupName: "Dummy",
   },
   mockDynamoEmptyItem: {
-    "id": "FAKEID",
-    "metricUnits": {},
-    "metricValues": {},
-    "groupName": undefined,
+    id: "FAKEID",
+    metricUnits: {},
+    metricValues: {},
+    groupKeys: {},
+    groupName: undefined,
   },
   mockUnmatchedGroup: {
-    "id": "FAKEID",
-    "name": "Dummy",
-    "metrics": {
+    id: "FAKEID",
+    name: "Dummy",
+    metrics: {
         "ac-power": {
             "unit": "W"
         },
@@ -320,13 +374,13 @@ module.exports = {
     ConditionExpression: "attribute_exists(metricValues)"
   },
   updatedDynamoGroup: {
-    "groupName": "NewName",
-    "id": "FAKEID",
-    "metricUnits": {
+    groupName: "NewName",
+    id: "FAKEID",
+    metricUnits: {
       "ac-current": "mA",
       "ac-power": "kW",
     },
-    "metricValues": {
+    metricValues: {
       "ac-current": {
         "time": "2020-01-17T08:21:57Z",
         "value": 7.2,
@@ -335,7 +389,8 @@ module.exports = {
         "time": "2020-01-17T08:21:57Z",
         "value": 90,
       }
-    }
+    },
+    groupKeys: {}
   },
   bulkMetrics: {
     values: {

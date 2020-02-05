@@ -1,5 +1,6 @@
 const dbGateway = require('../support/mockDynamoGateway');
-const createGroup = require('../../lib/use-cases/CreateGroup')({ dbGateway });
+const createGroupKey = jest.fn();
+const createGroup = require('../../lib/use-cases/CreateGroup')({ dbGateway }, { createGroupKey });
 const {
   mockCreateRequest,
   mockCreateRequestNoUnits,
@@ -21,6 +22,12 @@ describe('CreateGroup', () => {
     dbGateway.createGroup.mockReturnValueOnce({id: fakeId});
     const group = await createGroup(mockCreateRequest);
     expect(group.id).toEqual(fakeId);
+  });
+
+  it("should create a default key for the group", async () => {
+    dbGateway.createGroup.mockReturnValueOnce({id: fakeId});
+    const group = await createGroup(mockCreateRequest);
+    expect(createGroupKey).toHaveBeenCalledWith(group.id, "Default Key", ['*'])
   });
 
   it("should add timestamps if none are present", async () => {

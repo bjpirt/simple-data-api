@@ -33,4 +33,11 @@ describe('Utils', () => {
       expect(Object.keys(result).sort()).toEqual(['id', 'metrics'])
     });
   });
+
+  describe('generateRandomId', () => {
+    it("should return a random string of the correct length", async () => {
+      let randomId = utils.generateRandomId(8);
+      expect(randomId).toMatch(/^[a-z0-9]{8}$/);
+    });
+  });
 });

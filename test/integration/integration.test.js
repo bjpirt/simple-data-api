@@ -52,6 +52,24 @@ describe('CreateGroup', () => {
     expect(result.headers.Location).toEqual(`/groups/${afterGroups.Items[0].id}`);
   });
 
+  it("should create a default key for the group", async () => {
+    await app.createGroup({body: JSON.stringify(f.mockCreateRequest)});
+    const group = (await server.getAllItems('GROUPS_TABLE')).Items[0];
+    expect(group).toHaveProperty('groupKeys');
+    expect(Object.keys(group.groupKeys).length).toBe(1);
+    const keyId = Object.keys(group.groupKeys)[0];
+    expect(group.groupKeys[keyId].methods).toEqual(['*']);
+    expect(group.groupKeys[keyId].name).toEqual('Default Key');
+    expect(group.groupKeys[keyId]).toHaveProperty('token');
+    const token = group.groupKeys[keyId].token
+    const payload = jwt.verify(token, jwt_secret);
+    expect(payload).toMatchObject({
+      groupId: group.id,
+      methods: ['*'],
+      scope: 'group'
+    })
+  });
+
   it("should return 500 if there is an error", async () => {
     const log = jest.spyOn(console, 'log').mockImplementation(() => {});
     const result = await app.createGroup({});
@@ -90,6 +108,15 @@ describe('ListGroups', () => {
       const result = await app.updateGroup({pathParameters: {}});
       expect(result.statusCode).toEqual(500);
       expect(log).toHaveBeenCalled();
+    });
+  });
+
+  describe('ListGroupKeys', () => {
+    it("should return the keys from the database", async () => {
+      await server.createItem(f.mockDynamoCreateRequestWithKeys);
+      const result = await app.listGroupKeys({pathParameters: {groupId: fakeId}});
+      expect(result.statusCode).toEqual(200);
+      expect(JSON.parse(result.body)).toEqual(f.keysResult);
     });
   });
 

@@ -57,6 +57,13 @@ functions:
           path: groups/{groupId}
           method: get
           cors: true
+  listGroupKeys:
+    handler: lambda.listGroupKeys
+    events:
+      - http:
+          path: groups/{groupId}/keys
+          method: get
+          cors: true
   updateGroup:
     handler: lambda.updateGroup
     events:

@@ -150,6 +150,38 @@ describe('Dynamo Gateway', () => {
     });
   });
 
+  describe('createGroupKey', () => {
+    it("should create a key for the group", async () => {
+      const keyData = {name: 'Name', methods: ['*']};
+      await dynamo.createGroupKey(fakeId, keyData)
+      expect(config.client.aupdate).toHaveBeenCalledWith({
+        TableName: 'GROUPS_TABLE',
+        Key: { id: fakeId },
+        UpdateExpression: 'SET groupKeys.#keyId = :keyData',
+        ExpressionAttributeNames: {'#keyId': keyData.id },
+        ExpressionAttributeValues: { ':keyData': keyData},
+        ConditionExpression: 'attribute_exists(groupKeys) AND attribute_not_exists(groupKeys.#keyId)'
+      });
+    });
+  });
+
+  describe('listGroupKeys', () => {
+    it("should list the keys for the group", async () => {
+      const item = {Item: { groupKeys: { keyid1: { name: "Key one" }, keyid2: { name: "Key two" }}}}
+      config.client.aget.mockReturnValue(item)
+      const result = await dynamo.listGroupKeys(fakeId);
+      expect(config.client.aget).toHaveBeenCalledWith({Key: { id: fakeId }, TableName: config.tables.groupsTable});
+      expect(result).toEqual([{ name: "Key one" }, { name: "Key two" }]);
+    });
+
+    it("should return undefined if the group doesn't exist", async () => {
+      config.client.aget.mockReturnValue({})
+      const result = await dynamo.listGroupKeys(fakeId);
+      expect(config.client.aget).toHaveBeenCalledWith({Key: { id: fakeId }, TableName: config.tables.groupsTable});
+      expect(result).toBeUndefined();
+    });
+  });
+
   describe('updateValues', () => {
     it("should update a record with the correct values", async () => {
       await dynamo.updateValues(f.createValuesSingleTimeItem);
