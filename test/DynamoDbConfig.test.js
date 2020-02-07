@@ -35,7 +35,9 @@ describe('DynamoDbConfig', () => {
       dbConfig: {
         region: 'localhost',
         endpoint: 'http://localhost:8100',
-        sslEnabled: false
+        sslEnabled: false,
+        accessKeyId: 'AWS_ACCESS_KEY_ID',
+        secretAccessKey: 'AWS_SECRET_ACCESS_KEY'
       },
       tables: {
         valuesTable: VALUES_TABLE,

@@ -8,7 +8,7 @@ const AWS = require('aws-sdk');
 const { tables } = require('./dynamoTables');
 
 MockServer = {
-  start: (cb, port) => {
+  start: (port) => {
     port = port || 8100;
     return new Promise(resolve =>
       dynaliteServer.listen(port, resolve)
@@ -21,7 +21,7 @@ MockServer = {
 
   createTables: async (port) => {
     port = port || 8100;
-    const dynamo = new AWS.DynamoDB({endpoint: 'http://localhost:8100', region: 'region'})
+    const dynamo = new AWS.DynamoDB({endpoint: `http://localhost:${port}`, region: 'region', accessKeyId: 'x', secretAccessKey: 'x'})
 
     await Promise.all(tables.map(table => dynamo.createTable(table).promise()));
     await Promise.all(
@@ -33,7 +33,7 @@ MockServer = {
 
   deleteTables: async (port) => {
     port = port || 8100;
-    const dynamo = new AWS.DynamoDB({endpoint: 'http://localhost:8100', region: 'region'})
+    const dynamo = new AWS.DynamoDB({endpoint: `http://localhost:${port}`, region: 'region', accessKeyId: 'x', secretAccessKey: 'x'})
 
     const existingTables = await dynamo.listTables().promise()
     await Promise.all(
@@ -57,13 +57,13 @@ MockServer = {
 
   createItem: async (item, port) => {
     port = port || 8100;
-    const client = new AWS.DynamoDB.DocumentClient({endpoint: 'http://localhost:8100', region: 'region'});
+    const client = new AWS.DynamoDB.DocumentClient({endpoint: `http://localhost:${port}`, region: 'region', accessKeyId: 'x', secretAccessKey: 'x'});
     await client.put(item).promise()
   },
 
   getAllItems: async (table, port) => {
     port = port || 8100;
-    const client = new AWS.DynamoDB.DocumentClient({endpoint: 'http://localhost:8100', region: 'region'});
+    const client = new AWS.DynamoDB.DocumentClient({endpoint: `http://localhost:${port}`, region: 'region', accessKeyId: 'x', secretAccessKey: 'x'});
     return client.scan({ TableName : table }).promise();
   }
 }
