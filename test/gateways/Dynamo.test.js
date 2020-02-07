@@ -2,6 +2,7 @@
 let config, dynamo;
 const f = require('../support/fixtures')
 const fakeId = 'FAKEID';
+const fakeKeyId = "FAKEGROUPKEY";
 const fakeMetric = 'ac-power';
 
 describe('Dynamo Gateway', () => {
@@ -179,6 +180,48 @@ describe('Dynamo Gateway', () => {
       const result = await dynamo.listGroupKeys(fakeId);
       expect(config.client.aget).toHaveBeenCalledWith({Key: { id: fakeId }, TableName: config.tables.groupsTable});
       expect(result).toBeUndefined();
+    });
+  });
+
+  describe('deleteGroupKey', () => {
+    it("should make the correct call to dynamo", async () => {
+      await dynamo.deleteGroupKey(fakeId, fakeKeyId);
+      expect(config.client.aupdate).toHaveBeenCalledWith({
+        TableName: 'GROUPS_TABLE',
+        Key: { id: fakeId },
+        UpdateExpression: 'REMOVE groupKeys.#keyId',
+        ExpressionAttributeNames: {'#keyId': fakeKeyId },
+        ConditionExpression: 'attribute_exists(groupKeys.#keyId)'
+      });
+    });
+
+    it("should raise a not found exception if the group does not exist", async () => {
+      config.client.aupdate = jest.fn(() => {
+        throw(f.updateException);
+      });
+      try{
+        await dynamo.deleteGroupKey(fakeId, fakeKeyId);
+        expect(true).toBe(false);
+      }catch(e){
+        exception = e;
+      }
+      expect(exception).toBe("NotFoundException")
+      config.client.aupdate = jest.fn();
+    });
+
+    it("should raise other types of exceptions", async () => {
+      const dummyException = {code: 'dummmy'};
+      config.client.aupdate = jest.fn(() => {
+        throw(dummyException);
+      });
+      try{
+        await dynamo.deleteGroupKey(fakeId, fakeKeyId);
+        expect(true).toBe(false);
+      }catch(e){
+        exception = e;
+      }
+      expect(exception).toBe(dummyException)
+      config.client.aupdate = jest.fn();
     });
   });
 

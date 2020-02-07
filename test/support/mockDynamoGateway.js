@@ -5,6 +5,7 @@ module.exports =  {
   listGroups: jest.fn(),
   getGroup: jest.fn(),
   createGroupKey: jest.fn(),
+  deleteGroupKey: jest.fn(),
   listGroupKeys: jest.fn(),
   updateValues: jest.fn(),
   createValues: jest.fn(),

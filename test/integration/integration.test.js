@@ -88,110 +88,126 @@ describe('ListGroups', () => {
     expect(body.length).toBe(2);
     expect(body.map(g => g.id).sort()).toEqual(['FAKEID', 'FAKEIDNEW'])
   });
+});
 
-  describe('UpdateGroup', () => {
-    it("should update the group in the database", async () => {
-      await server.createItem(f.mockDynamoCreateRequest);
-      const result = await app.updateGroup({pathParameters: {groupId: fakeId}, body: JSON.stringify(f.mockGroup2)});
-      expect(result.statusCode).toEqual(204);
-      const dbGroup = (await server.getAllItems('GROUPS_TABLE')).Items[0];
-      expect(dbGroup).toStrictEqual(f.updatedDynamoGroup);
-    });
-  
-    it("should return 404 if the group doesn't exist", async () => {
-      const result = await app.updateGroup({pathParameters: {groupId: fakeId}, body: JSON.stringify(f.mockCreateRequest)});
-      expect(result.statusCode).toEqual(404);
-    });
-  
-    it("should return 500 if there is an error", async () => {
-      const log = jest.spyOn(console, 'log').mockImplementation(() => {});
-      const result = await app.updateGroup({pathParameters: {}});
-      expect(result.statusCode).toEqual(500);
-      expect(log).toHaveBeenCalled();
-    });
+describe('UpdateGroup', () => {
+  it("should update the group in the database", async () => {
+    await server.createItem(f.mockDynamoCreateRequest);
+    const result = await app.updateGroup({pathParameters: {groupId: fakeId}, body: JSON.stringify(f.mockGroup2)});
+    expect(result.statusCode).toEqual(204);
+    const dbGroup = (await server.getAllItems('GROUPS_TABLE')).Items[0];
+    expect(dbGroup).toStrictEqual(f.updatedDynamoGroup);
   });
 
-  describe('ListGroupKeys', () => {
-    it("should return the keys from the database", async () => {
-      await server.createItem(f.mockDynamoCreateRequestWithKeys);
-      const result = await app.listGroupKeys({pathParameters: {groupId: fakeId}});
-      expect(result.statusCode).toEqual(200);
-      expect(JSON.parse(result.body)).toEqual(f.keysResult);
-    });
+  it("should return 404 if the group doesn't exist", async () => {
+    const result = await app.updateGroup({pathParameters: {groupId: fakeId}, body: JSON.stringify(f.mockCreateRequest)});
+    expect(result.statusCode).toEqual(404);
   });
 
-  describe('CreateMetrics', () => {
-    it("add values to the history and update the group", async () => {
-      await server.createItem(f.mockDynamoCreateRequest);
-      const result = await app.createMetrics({pathParameters: {groupId: fakeId}, body: JSON.stringify(f.bulkMetrics)});
-      expect(result.statusCode).toEqual(204);
-      const dbGroup = (await server.getAllItems('GROUPS_TABLE')).Items[0];
-      const dbValues = (await server.getAllItems('VALUES_TABLE')).Items;
-      expect(dbGroup).toStrictEqual(f.updatedDynamoItem);
-      expect(dbValues).toStrictEqual(f.dynamoValuesList);
-    });
-  
-    it("should return 404 if the group doesn't exist", async () => {
-      const result = await app.createMetrics({pathParameters: {groupId: fakeId}, body: JSON.stringify(f.bulkMetrics)});
-      expect(result.statusCode).toEqual(404);
-    });
-  
-    it("should return 500 if there is an error", async () => {
-      const log = jest.spyOn(console, 'log').mockImplementation(() => {});
-      const result = await app.createMetrics({pathParameters: {}});
-      expect(result.statusCode).toEqual(500);
-      expect(log).toHaveBeenCalled();
-    });
+  it("should return 500 if there is an error", async () => {
+    const log = jest.spyOn(console, 'log').mockImplementation(() => {});
+    const result = await app.updateGroup({pathParameters: {}});
+    expect(result.statusCode).toEqual(500);
+    expect(log).toHaveBeenCalled();
+  });
+});
+
+describe('ListGroupKeys', () => {
+  it("should return the keys from the database", async () => {
+    await server.createItem(f.mockDynamoCreateRequestWithKeys);
+    const result = await app.listGroupKeys({pathParameters: {groupId: fakeId}});
+    expect(result.statusCode).toEqual(200);
+    expect(JSON.parse(result.body)).toEqual(f.keysResult);
+  });
+});
+
+describe('DeleteGroupKey', () => {
+  it("should delete the keys from the group", async () => {
+    await server.createItem(f.mockDynamoCreateRequestWithKeys);
+    const result = await app.deleteGroupKey({pathParameters: {groupId: fakeId, keyId: 'abc'}});
+    expect(result.statusCode).toEqual(204);
+    const dbGroup = (await server.getAllItems('GROUPS_TABLE')).Items[0];
+    expect(dbGroup.groupKeys).not.toHaveProperty('abc');
   });
 
-  describe('GetMetric', () => {
-    it("should get the values from the database", async () => {
-      await server.createItem(f.mockDynamoCreateRequest);
-      const dynamoValues = f.generateDynamoValuesList(3);
-      for(let Item of dynamoValues){
-        await server.createItem({TableName: 'VALUES_TABLE', Item});
-      }
-      const result = await app.getMetric({pathParameters: {groupId: fakeId, metricId: fakeMetric}});
-      expectedResult = dynamoValues.map(val => { return {time: val.metricTime, value: val.metricValues[fakeMetric]}}).reverse()
-      expect(result.statusCode).toEqual(200);
-      expect(JSON.parse(result.body)).toStrictEqual(expectedResult);
-    });
-  
-    it("should return 404 if the group doesn't exist", async () => {
-      const result = await app.getMetric({pathParameters: {groupId: fakeId, metricId: fakeMetric}});
-      expect(result.statusCode).toEqual(404);
-    });
-  
-    it("should return 500 if there is an error", async () => {
-      const log = jest.spyOn(console, 'log').mockImplementation(() => {});
-      const result = await app.getMetric({pathParameters: {}});
-      expect(result.statusCode).toEqual(500);
-      expect(log).toHaveBeenCalled();
-    });
+  it("should return 404 if the group does not exist", async () => {
+    await server.createItem(f.mockDynamoCreateRequestWithKeys);
+    const result = await app.deleteGroupKey({pathParameters: {groupId: "BADID", keyId: 'abc'}});
+    expect(result.statusCode).toEqual(404);
+  });
+});
+
+describe('CreateMetrics', () => {
+  it("add values to the history and update the group", async () => {
+    await server.createItem(f.mockDynamoCreateRequest);
+    const result = await app.createMetrics({pathParameters: {groupId: fakeId}, body: JSON.stringify(f.bulkMetrics)});
+    expect(result.statusCode).toEqual(204);
+    const dbGroup = (await server.getAllItems('GROUPS_TABLE')).Items[0];
+    const dbValues = (await server.getAllItems('VALUES_TABLE')).Items;
+    expect(dbGroup).toStrictEqual(f.updatedDynamoItem);
+    expect(dbValues).toStrictEqual(f.dynamoValuesList);
   });
 
-  describe('Login', () => {
-    it("should return the token if the user can log in", async () => {
-      const body = JSON.stringify({ user, pass })
-      const result = await app.login({ body });
-      expect(result.statusCode).toEqual(200);
-      const json = JSON.parse(result.body);
-      expect(json).toHaveProperty('token');
-      const decoded = jwt.verify(json.token, jwt_secret);
-      expect(decoded.scope).toEqual('user');
-      expect(decoded.exp - decoded.iat).toBe(7 * 86400);
-    });
+  it("should return 404 if the group doesn't exist", async () => {
+    const result = await app.createMetrics({pathParameters: {groupId: fakeId}, body: JSON.stringify(f.bulkMetrics)});
+    expect(result.statusCode).toEqual(404);
+  });
 
-    it("should return unauthorized if the username is wrong", async () => {
-      const body = JSON.stringify({ user: 'baduser', pass })
-      const result = await app.login({ body });
-      expect(result.statusCode).toEqual(401);
-    });
+  it("should return 500 if there is an error", async () => {
+    const log = jest.spyOn(console, 'log').mockImplementation(() => {});
+    const result = await app.createMetrics({pathParameters: {}});
+    expect(result.statusCode).toEqual(500);
+    expect(log).toHaveBeenCalled();
+  });
+});
 
-    it("should return unauthorized if the password is wrong", async () => {
-      const body = JSON.stringify({ user, pass: 'badpass' })
-      const result = await app.login({ body });
-      expect(result.statusCode).toEqual(401);
-    });
+describe('GetMetric', () => {
+  it("should get the values from the database", async () => {
+    await server.createItem(f.mockDynamoCreateRequest);
+    const dynamoValues = f.generateDynamoValuesList(3);
+    for(let Item of dynamoValues){
+      await server.createItem({TableName: 'VALUES_TABLE', Item});
+    }
+    const result = await app.getMetric({pathParameters: {groupId: fakeId, metricId: fakeMetric}});
+    expectedResult = dynamoValues.map(val => { return {time: val.metricTime, value: val.metricValues[fakeMetric]}}).reverse()
+    expect(result.statusCode).toEqual(200);
+    expect(JSON.parse(result.body)).toStrictEqual(expectedResult);
+  });
+
+  it("should return 404 if the group doesn't exist", async () => {
+    const result = await app.getMetric({pathParameters: {groupId: fakeId, metricId: fakeMetric}});
+    expect(result.statusCode).toEqual(404);
+  });
+
+  it("should return 500 if there is an error", async () => {
+    const log = jest.spyOn(console, 'log').mockImplementation(() => {});
+    const result = await app.getMetric({pathParameters: {}});
+    expect(result.statusCode).toEqual(500);
+    expect(log).toHaveBeenCalled();
+  });
+});
+
+describe('Login', () => {
+  it("should return the token if the user can log in", async () => {
+    const body = JSON.stringify({ user, pass })
+    const result = await app.login({ body });
+    expect(result.statusCode).toEqual(200);
+    const json = JSON.parse(result.body);
+    expect(json).toHaveProperty('token');
+    const decoded = jwt.verify(json.token, jwt_secret);
+    expect(decoded.scope).toEqual('user');
+    expect(decoded.exp - decoded.iat).toBe(7 * 86400);
+  });
+
+  it("should return unauthorized if the username is wrong", async () => {
+    const body = JSON.stringify({ user: 'baduser', pass })
+    const result = await app.login({ body });
+    expect(result.statusCode).toEqual(401);
+  });
+
+  it("should return unauthorized if the password is wrong", async () => {
+    const body = JSON.stringify({ user, pass: 'badpass' })
+    const result = await app.login({ body });
+    expect(result.statusCode).toEqual(401);
   });
 });
